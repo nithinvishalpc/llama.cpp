@@ -1,0 +1,35 @@
+name: Build STQ Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - pr-22836-stq_0
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Setup Ninja
+      uses: seanmiddleditch/gha-setup-ninja@v5
+
+    - name: Configure
+      run: cmake -B build -G Ninja
+
+    - name: Build
+      run: cmake --build build --config Release -j
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: llama-stq-windows
+        path: |
+          build/bin/*.exe
+          build/bin/*.dll
